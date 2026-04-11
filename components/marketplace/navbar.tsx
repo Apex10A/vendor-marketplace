@@ -1,10 +1,11 @@
 'use client';
 
-import { ShoppingCart, Search, LogIn, Menu, X } from 'lucide-react';
+import { ShoppingCart, Search, LogIn, Menu, X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(3);
@@ -22,10 +23,15 @@ export default function Navbar() {
             >
               <Menu className="w-6 h-6 text-gray-700" />
             </button>
-            <span className="font-bold text-xl md:text-2xl text-orange-500">Vendra</span>
+            <Link href="/" className="flex items-center gap-1.5 group">
+              <div className="bg-orange-500 p-1.5 rounded-lg group-hover:bg-orange-600 transition-colors">
+                <Zap className="w-5 h-5 md:w-6 md:h-6 text-white fill-white" />
+              </div>
+              <span className="font-extrabold text-xl md:text-2xl tracking-tight bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
+                Vendra
+              </span>
+            </Link>
           </div>
-
-          {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-md">
             <div className="relative w-full">
               <Input
@@ -94,7 +100,14 @@ export default function Navbar() {
         <div className="md:hidden fixed inset-0 z-[60] bg-white animate-in slide-in-from-left duration-300">
           <div className="p-4 flex flex-col h-full">
             <div className="flex items-center justify-between mb-8">
-              <span className="font-bold text-2xl text-orange-500">Vendra</span>
+              <div className="flex items-center gap-1.5">
+                <div className="bg-orange-500 p-1.5 rounded-lg">
+                  <Zap className="w-5 h-5 text-white fill-white" />
+                </div>
+                <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
+                  Vendra
+                </span>
+              </div>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg"

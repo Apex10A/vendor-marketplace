@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+// prisma/schema.prisma
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?
+  role          Role      @default(CUSTOMER)
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  vendor        Vendor?
+  orders        Order[]
+  reviews       Review[]
+  cart          Cart?
+}
+
+enum Role {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+model Vendor {
+  id            String    @id @default(cuid())
+  storeName     String
+  description   String?
+  logo          String?
+  banner        String?
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  products      Product[]
+  orders        OrderItem[]
+}
+
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  description   String
+  price         Float
+  stock         Int       @default(0)
+  images        String[]
+  category      String
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  vendorId      String
+  vendor        Vendor    @relation(fields: [vendorId], references: [id])
+  orderItems    OrderItem[]
+  reviews       Review[]
+  cartItems     CartItem[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  total         Float
+  status        OrderStatus @default(PENDING)
+  address       String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  customerId    String
+  customer      User        @relation(fields: [customerId], references: [id])
+  items         OrderItem[]
+  payment       Payment?
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  quantity      Int
+  price         Float
+
+  // Relations
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id])
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+  vendorId      String
+  vendor        Vendor  @relation(fields: [vendorId], references: [id])
+}
+
+model Cart {
+  id            String     @id @default(cuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  userId        String     @unique
+  user          User       @relation(fields: [userId], references: [id])
+  items         CartItem[]
+}
+
+model CartItem {
+  id            String  @id @default(cuid())
+  quantity      Int
+
+  // Relations
+  cartId        String
+  cart          Cart    @relation(fields: [cartId], references: [id])
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  rating        Int
+  comment       String?
+  createdAt     DateTime @default(now())
+
+  // Relations
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  reference     String        @unique
+  provider      String        // "paystack" or "flutterwave"
+  createdAt     DateTime      @default(now())
+
+  // Relations
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
