@@ -5,10 +5,35 @@ import { DashboardSidebar } from '@/components/dashboard/sidebar'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { RecentOrdersTable } from '@/components/dashboard/recent-orders-table'
 import { SalesChart } from '@/components/dashboard/sales-chart'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [activeNav, setActiveNav] = useState('overview')
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated' && session?.user?.role !== 'VENDOR') {
+      router.push('/') // Redirect non-vendors to marketplace
+    }
+  }, [status, session, router])
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      </div>
+    )
+  }
+
+  if (!session || session.user.role !== 'VENDOR') {
+    return null
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
