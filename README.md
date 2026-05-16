@@ -2,26 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, install dependencies:
-
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
-```
-Create a `.env.local` file in the root directory and copy values from .env.example.
-
-Required environment variables:
-
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-NEXTAUTH_SECRET=
-
-Then, run the development server:
+First, run the development server:
 
 ```bash
 npm run dev
